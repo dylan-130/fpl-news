@@ -1,7 +1,7 @@
 # FPL Web App
 
 ## Overview
-This repository hosts the ongoing development of a **Fantasy Premier League (FPL) web application**, crafted for integration with **Voxbet's suite of innovative tools**. The primary goal of this project is to provide users with a **seamless and dynamic experience** by leveraging advanced backend architecture and real-time data from the **FPL API**.
+This repository hosts the ongoing development of a **Fantasy Premier League (FPL) web application**. The primary goal of this project is to provide users with a **seamless and dynamic experience** by leveraging advanced backend architecture and real-time data from the **FPL API** and **AWS**.
 
 ## Key Features
 - **Dynamic User Input System**: Users input their **team name and full name** directly on the homepage. These inputs are used to dynamically query relevant data from the backend.
