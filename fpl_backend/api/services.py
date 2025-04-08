@@ -23,31 +23,50 @@ async def get_current_event():
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
+                # Check if the response is successful
+                if not response.ok:
+                    logger.error(f"Failed to fetch bootstrap-static data. Status: {response.status}")
+                    return None
+
                 data = await response.json()
-            current_event = next((event for event in data['events'] if event['is_current']), None)
-            return current_event
+
+                # Find the current event
+                current_event = next((event for event in data['events'] if event['is_current']), None)
+                if not current_event:
+                    logger.error("No current event found in bootstrap-static response.")
+                    return None
+
+                logger.info(f"Current event found: {current_event['id']}")
+                return current_event
+
     except Exception as e:
         logger.error(f"Error fetching current event: {e}")
         return None
-
+    
 async def get_team_data(player_id, gameweek):
     url = f'https://fantasy.premierleague.com/api/entry/{player_id}/event/{gameweek}/picks/'
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
+                # Check if response is successful
+                if response.status != 200:
+                    logger.error(f"FPL API Error: Status {response.status} for player {player_id}, GW {gameweek}")
+                    return None
                 data = await response.json()
-            team_data = []
-            for pick in data['picks']:
-                player_info = pick['element']
-                player_position = pick['position']
-                team_data.append({
-                    'player_id': player_info,
-                    'position': player_position,
-                    'points': pick['total_points'],
-                    'captain': pick['captain'],
-                    'vice_captain': pick['vice_captain']
-                })
-            return team_data
+                logger.info(f"Fetched team data: {data}")
+                if 'picks' not in data:
+                    logger.error(f"No 'picks' in response for player {player_id}, GW {gameweek}")
+                    return None
+                team_data = []
+                for pick in data['picks']:
+                    team_data.append({
+                        'element': pick['element'],
+                        'position': pick['position'],
+                        'multiplier': pick['multiplier'],
+                        'is_captain': pick['is_captain'],
+                        'is_vice_captain': pick['is_vice_captain']
+                    })
+                return team_data
     except Exception as e:
-        logger.error(f"Error fetching team data: {e}")
-        return []
+        logger.error(f"Error in get_team_data: {e}")
+        return None

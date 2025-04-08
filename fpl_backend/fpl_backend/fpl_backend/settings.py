@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -53,8 +52,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+# settings.py
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Frontend origin
+    "http://localhost:5173",  # Vite default dev port
 ]
 
 ROOT_URLCONF = 'fpl_backend.urls'

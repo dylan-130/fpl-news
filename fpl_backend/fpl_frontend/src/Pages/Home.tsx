@@ -17,28 +17,11 @@ function App() {
     signInRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-// Navigate to Connect page and connect to backend API
-const handleConnect = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const teamName = (document.getElementById('teamName') as HTMLInputElement)?.value;
-  const fullName = (document.getElementById('fullName') as HTMLInputElement)?.value;
-
-  // Fetch from API
-  try {
-    const response = await fetch(`http://127.0.0.1:8000/api/get_player_id/?playerName=${fullName}&teamName=${teamName}`);
-    const data = await response.json();
-
-    console.log("Received from Django:", data);
-
-    // You can handle the data here as needed, for example, storing it in a state or localStorage
-
-    // Navigate to the next page only if fetch was successful
+  // Navigate to Connect page
+  const handleConnect = (e: React.FormEvent) => {
+    e.preventDefault();
     navigate('/connect');
-  } catch (err) {
-    console.error("API error:", err);
   }
-};
 
   return (
     <>
