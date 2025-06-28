@@ -1,0 +1,433 @@
+/* BetBuilder.css */
+
+.bet-builder-page {
+  padding-top: 80px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1A237E, #6A1B9A);
+  color: white;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.bet-builder-header {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  margin-bottom: 2rem;
+}
+
+.bet-builder-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bet-builder-header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.bet-builder-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem 1rem;
+  overflow-y: auto;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Luck Controls */
+.luck-controls {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.luck-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.luck-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #FFD700;
+}
+
+.luck-description {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.luck-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.lucky-button {
+  background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+  color: #1A237E !important;
+  font-weight: bold;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.lucky-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.unlucky-button {
+  background: linear-gradient(45deg, #FF6B6B, #FF8E8E) !important;
+  color: white !important;
+  font-weight: bold;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.unlucky-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+/* Bet Slip */
+.bet-slip {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-height: 50vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.bet-slip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.bet-slip-header h2 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #FFD700;
+}
+
+.total-odds {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+}
+
+/* Bet Legs */
+.bet-legs {
+  margin-bottom: 2rem;
+  max-height: 25vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.bet-leg {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border-left: 4px solid #FFD700;
+  transition: all 0.3s ease;
+}
+
+.bet-leg:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.leg-info {
+  flex: 1;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.3rem;
+}
+
+.player-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #FFD700;
+}
+
+.team-name {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.bet-type {
+  font-size: 0.9rem;
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.leg-odds {
+  text-align: right;
+}
+
+.odds {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+}
+
+/* Stake Section */
+.stake-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.stake-section label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #FFD700;
+}
+
+.stake-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-size: 1rem;
+  width: 120px;
+}
+
+.stake-input:focus {
+  outline: none;
+  border-color: #FFD700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.stake-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Potential Win */
+.potential-win {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.win-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.win-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFD700;
+}
+
+/* Action Buttons */
+.bet-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.back-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.place-bet-button {
+  background: linear-gradient(45deg, #4CAF50, #45a049) !important;
+  color: white !important;
+  font-weight: bold;
+  padding: 0.8rem 2rem;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  min-width: 140px;
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 10;
+}
+
+.place-bet-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* Loading and Error States */
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.loading {
+  color: #FFD700;
+}
+
+.error {
+  color: #FF6B6B;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bet-builder-header h1 {
+    font-size: 2rem;
+  }
+  
+  .luck-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .luck-buttons {
+    flex-direction: column;
+  }
+  
+  .bet-slip-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .bet-leg {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .leg-odds {
+    text-align: center;
+  }
+  
+  .stake-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .bet-actions {
+    flex-direction: column;
+  }
+  
+  .bet-builder-page {
+    padding-top: 60px;
+  }
+  
+  .bet-builder-content {
+    padding: 0 0.5rem 1rem 0.5rem;
+    min-height: calc(100vh - 60px);
+    gap: 1rem;
+  }
+  
+  .bet-slip {
+    max-height: 45vh;
+    padding: 1.5rem;
+  }
+  
+  .bet-legs {
+    max-height: 20vh;
+  }
+  
+  .bet-actions {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bet-builder-content {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.bet-leg {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.bet-leg:nth-child(1) { animation-delay: 0.1s; }
+.bet-leg:nth-child(2) { animation-delay: 0.2s; }
+.bet-leg:nth-child(3) { animation-delay: 0.3s; }
+.bet-leg:nth-child(4) { animation-delay: 0.4s; }
+.bet-leg:nth-child(5) { animation-delay: 0.5s; }
+.bet-leg:nth-child(6) { animation-delay: 0.6s; } 

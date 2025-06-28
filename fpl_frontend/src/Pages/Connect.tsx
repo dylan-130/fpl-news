@@ -165,7 +165,7 @@ const Connect = () => {
         <div className="bottom-right-buttons">
           <Button 
             label="Confirm & Get Bet-Builder" 
-            onClick={() => console.log('Confirm clicked')} 
+            onClick={() => navigate('/bet-builder')} 
             className="confirm-button" 
           />
           <Button 

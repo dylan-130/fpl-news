@@ -1,59 +1,178 @@
-# FPL Web App
+# FPL Pulse - AI-Powered Fantasy Premier League Betting Platform
 
-## Overview
-This repository hosts the ongoing development of a **Fantasy Premier League (FPL) web application**. The primary goal of this project is to provide users with a **seamless and dynamic experience** by leveraging advanced backend architecture and real-time data from the **FPL API** and **AWS**.
+A sophisticated web application that combines Fantasy Premier League (FPL) team analysis with AI-powered betting suggestions. Built with Django backend and React frontend, featuring machine learning for personalized bet generation.
 
-## Key Features
-- **Dynamic User Input System**: Users input their **team name and full name** directly on the homepage. These inputs are used to dynamically query relevant data from the backend.
-- **Proprietary API**: Built using **AWS**, this custom API points to a **Lambda function** that queries an **internal database** to retrieve a **unique player ID** based on user-provided information. This player ID is then used to fetch team-specific data from the **FPL API**.
-- **Sophisticated Backend**: The application integrates **multiple layers of logic** to ensure accurate retrieval of player-specific data, without relying on dropdown menus or static lists.
-- **AWS Integration**: Utilizes **AWS Lambda** for efficient, serverless computations, ensuring **scalability** and **reduced latency** when querying databases and APIs.
+## 🚀 Features
 
-## Current State
-The project is actively under development, with features being iteratively added and refined. The current focus is on:
+### Core Functionality
+- **FPL Team Integration**: Connect your FPL team and view your current squad
+- **AI-Powered Bet Builder**: Sophisticated ML system that generates personalized betting suggestions
+- **User-Specific Learning**: Tracks betting history to improve suggestions over time
+- **Dynamic Odds Adjustment**: "I'm Feeling Lucky" system for risk adjustment
+- **Professional Bet Slip**: Complete betting interface with stake management
 
-- Perfecting the **dynamic querying mechanism** for retrieving accurate player data.
-- Enhancing the **backend architecture** to handle high volumes of concurrent requests.
-- Establishing a **seamless user experience** for entering data and retrieving personalized FPL insights.
+### Technical Highlights
+- **Machine Learning Backend**: Sophisticated player analysis and odds generation
+- **User Behavior Learning**: Personalized betting patterns based on historical data
+- **Real-time FPL Data**: Live integration with Fantasy Premier League API
+- **Responsive Design**: Modern, engaging UI with animations and professional styling
+- **Scalable Architecture**: Django REST API with React frontend
 
-## Future Potential
-The long-term vision for this project extends beyond its current scope. Future iterations aim to transform this web application into a **fully-fledged platform** that generates bet-builder combinations based on user-specific FPL data. This will involve:
+## 🏗️ Architecture
 
-- **Advanced Data Analytics**: Using **machine learning algorithms** to analyze user FPL data and suggest optimal betting combinations.
-- **User-Centric Features**: Providing **detailed insights** and recommendations tailored to individual users.
-- **Scalable Architecture**: Expanding the backend to handle **complex computations** and **large-scale data integrations**.
+### Backend (Django)
+```
+fpl_backend/
+├── api/
+│   ├── views.py          # API endpoints
+│   ├── services.py       # FPL API integration
+│   ├── ml_models.py      # Machine learning system
+│   └── urls.py           # URL routing
+├── fpl_backend/
+│   ├── settings.py       # Django configuration
+│   └── urls.py           # Main URL routing
+└── manage.py
+```
 
-## Technology Stack
-- **Frontend**:  
-  - **React** with **Vite** for a fast and optimized development experience.  
-  - **TypeScript** for type safety and better maintainability.  
+### Frontend (React + TypeScript)
+```
+fpl_frontend/
+├── src/
+│   ├── Pages/
+│   │   ├── Home.tsx          # Landing page
+│   │   ├── Connect.tsx       # Team connection
+│   │   ├── BetBuilder.tsx    # Bet builder interface
+│   │   └── BetReceipt.tsx    # Bet confirmation
+│   ├── Components/
+│   │   ├── Button/
+│   │   ├── Navbar/
+│   │   └── PlayerCard/
+│   └── styles/
+└── package.json
+```
 
-- **Backend**:  
-  - **Django** (Python) for API development and data handling.  
-  - **JavaScript** for backend scripting where needed.  
+## 🧠 Machine Learning System
 
-- **API Integration**:  
-  - Seamless integration with the **FPL API** to fetch real-time player and team data.  
+### Player Analysis
+- **Profile Classification**: High/Mid/Low profile players based on performance
+- **Position Analysis**: Different betting strategies for different positions
+- **Captain/Vice-Captain Logic**: Special consideration for team leadership
 
-- **Database**:  
-  - Proprietary **internal database** designed to store and manage user inputs and corresponding player IDs.  
+### Bet Generation Algorithm
+1. **Team Composition Analysis**: Analyzes your FPL team structure
+2. **Player Profile Matching**: Matches players to betting profiles
+3. **Historical Learning**: Uses your betting history to adjust baseline odds
+4. **Luck Level Adjustment**: Dynamic odds adjustment based on risk preference
+5. **Multi-leg Bet Creation**: Generates 4-6 leg bets with optimal combinations
 
-- **Cloud Services**:  
-  - **AWS Lambda** for serverless execution, ensuring scalability and cost efficiency.  
+### User Learning Features
+- **Betting History Tracking**: Records all placed bets
+- **Pattern Recognition**: Learns user preferences over time
+- **Odds Personalization**: Adjusts baseline odds based on user behavior
+- **Risk Profile Adaptation**: Adapts to user's risk tolerance
 
-## How It Works
-1. **User Input**: Users enter their **team name** and **full name** on the homepage.
-2. **Backend Query**: The **proprietary API**, powered by **AWS Lambda**, retrieves the **unique player ID** corresponding to the inputted details by querying the internal database.
-3. **FPL API Call**: The retrieved **player ID** is used to dynamically fetch **user-specific FPL data** from the **FPL API**.
-4. **Data Display**: The application renders the fetched data **in real-time**, providing users with actionable insights into their FPL teams.
+## 🎯 Bet Types Supported
 
-## Contributions
-This project is actively being developed and is **not currently open to external contributions**. For inquiries, feel free to contact the repository owner.
+- **Goal Scorer**: Player to score goals
+- **Assist**: Player to provide assists
+- **Clean Sheet**: Defensive players to keep clean sheets
+- **Bonus Points**: High-profile players to earn bonus points
+- **Multiple Goals**: Players to score multiple goals
+- **Man of the Match**: Players to win MOTM awards
 
-## Contact
-For more information or collaboration opportunities, please reach out to **Dylan Byrne** at **dylan8byrne@gmail.com**.
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.8+
+- Node.js 16+
+- npm or yarn
+
+### Backend Setup
+```bash
+cd fpl_backend
+pip install -r requirements.txt
+python3 manage.py migrate
+python3 manage.py runserver
+```
+
+### Frontend Setup
+```bash
+cd fpl_frontend
+npm install
+npm run dev
+```
+
+### Environment Variables
+Create a `.env` file in the backend directory:
+```
+DEBUG=True
+SECRET_KEY=your-secret-key
+ALLOWED_HOSTS=localhost,127.0.0.1
+```
+
+## 📱 Usage Flow
+
+1. **Connect Your Team**: Enter your FPL team name and full name
+2. **View Your Squad**: See your current FPL team with player details
+3. **Generate Bets**: Click "Confirm & Get Bet-Builder" to generate AI suggestions
+4. **Adjust Risk**: Use "I'm Feeling Lucky" buttons to adjust odds
+5. **Place Bet**: Set your stake and place the bet
+6. **Get Receipt**: View your bet confirmation and receipt
+
+## 🎨 UI/UX Features
+
+- **Consistent Color Palette**: Professional blue-purple gradient theme
+- **Smooth Animations**: Engaging transitions and hover effects
+- **Responsive Design**: Works perfectly on all device sizes
+- **Interactive Elements**: Dynamic buttons and real-time updates
+- **Professional Bet Slip**: Industry-standard betting interface
+
+## 🔧 Technical Implementation
+
+### API Endpoints
+- `GET /api/get_player_id/` - Get FPL player ID
+- `GET /api/async_get_team_data/` - Fetch team data
+- `GET /api/generate_bet_suggestions/` - Generate ML-powered bets
+- `GET /api/adjust_odds/` - Adjust odds based on luck level
+- `POST /api/place_bet/` - Place a bet and record it
+
+### ML Model Features
+- **Player Profile Classification**: Automatic player categorization
+- **Odds Calculation**: Sophisticated odds generation algorithm
+- **User History Learning**: Personalized betting patterns
+- **Risk Adjustment**: Dynamic odds modification
+
+### Data Storage
+- **User Betting History**: JSON-based storage for user preferences
+- **Player Profiles**: Cached player performance data
+- **Bet Records**: Complete bet tracking and analysis
+
+## 🎓 Professional Features
+
+This project demonstrates:
+- **Full-Stack Development**: Django + React architecture
+- **Machine Learning Integration**: Sophisticated ML algorithms
+- **API Design**: RESTful API with proper error handling
+- **User Experience**: Professional, engaging interface
+- **Data Analysis**: Real-time data processing and analysis
+- **Scalable Architecture**: Modular, maintainable codebase
+
+## 🔮 Future Enhancements
+
+- **Real-time Odds Updates**: Live odds from betting providers
+- **Advanced ML Models**: Deep learning for better predictions
+- **Social Features**: Share bets with friends
+- **Mobile App**: Native iOS/Android applications
+- **Betting History Dashboard**: Detailed analytics and insights
+
+## 📄 License
+
+This project is for educational and portfolio purposes.
+
+## 👨‍💻 Author
+
+Built as a professional software engineering project showcasing advanced full-stack development skills, machine learning integration, and modern web technologies.
 
 ---
 
-Stay tuned for further updates as this project evolves into a **comprehensive platform** for both FPL enthusiasts and betting aficionados.
----
+**Note**: This is a demonstration project. No real money betting is involved.

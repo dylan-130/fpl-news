@@ -1,0 +1,44 @@
+{
+  "4700653": [
+    {
+      "timestamp": "2025-06-28T21:35:42.479024",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "120dca4b-33d3-42fb-a804-00d0cf97e242"
+    }
+  ],
+  "7110642": [
+    {
+      "timestamp": "2025-06-28T21:40:43.414149",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "c939b223-b746-438f-b2f6-7ba86a53fc5e"
+    }
+  ],
+  "4393836": [
+    {
+      "timestamp": "2025-06-28T21:45:42.627238",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "2eaa9138-d4af-430e-9df3-ecefeb359feb"
+    },
+    {
+      "timestamp": "2025-06-28T21:46:14.479211",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "91ea0e42-d1d6-46e3-a78f-e76201e6f7e5"
+    }
+  ]
+}
