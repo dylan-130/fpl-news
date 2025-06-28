@@ -57,14 +57,31 @@ async def get_team_data(player_id, gameweek):
                 if 'picks' not in data:
                     logger.error(f"No 'picks' in response for player {player_id}, GW {gameweek}")
                     return None
+                
+                # Fetch additional player details from bootstrap-static
+                bootstrap_url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
+                async with session.get(bootstrap_url) as bootstrap_response:
+                    if bootstrap_response.status != 200:
+                        logger.error(f"Failed to fetch bootstrap data. Status: {bootstrap_response.status}")
+                        return None
+                    
+                    bootstrap_data = await bootstrap_response.json()
+                    players = {p['id']: p for p in bootstrap_data['elements']}
+                    teams = {t['id']: t for t in bootstrap_data['teams']}
+
                 team_data = []
                 for pick in data['picks']:
+                    player = players.get(pick['element'], {})
                     team_data.append({
-                        'element': pick['element'],
+                        'id': pick['element'],
+                        'name': player.get('web_name', 'Unknown'),
                         'position': pick['position'],
-                        'multiplier': pick['multiplier'],
+                        'element_type': player.get('element_type', 1),
+                        'points': player.get('event_points', 0),
                         'is_captain': pick['is_captain'],
-                        'is_vice_captain': pick['is_vice_captain']
+                        'is_vice_captain': pick['is_vice_captain'],
+                        'multiplier': pick['multiplier'],
+                        'team_name': teams.get(player.get('team', 0), {}).get('short_name', '')
                     })
                 return team_data
     except Exception as e:

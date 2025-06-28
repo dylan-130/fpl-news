@@ -24,19 +24,37 @@ const handleConnect = async (e: React.FormEvent) => {
   const teamName = (document.getElementById('teamName') as HTMLInputElement)?.value;
   const fullName = (document.getElementById('fullName') as HTMLInputElement)?.value;
 
+  if (!teamName || !fullName) {
+    alert('Please fill in both team name and full name');
+    return;
+  }
+
   // Fetch from API
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/get_player_id/?playerName=${fullName}&teamName=${teamName}`);
+    const response = await fetch(`http://127.0.0.1:8000/api/get_player_id/?playerName=${encodeURIComponent(fullName)}&teamName=${encodeURIComponent(teamName)}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to get player ID');
+    }
+    
     const data = await response.json();
-
     console.log("Received from Django:", data);
 
-    // You can handle the data here as needed, for example, storing it in a state or localStorage
-
-    // Navigate to the next page only if fetch was successful
-    navigate('/connect');
+    if (data.player_id) {
+      // Store the player ID and other data for the Connect page
+      localStorage.setItem('playerId', data.player_id);
+      localStorage.setItem('playerName', fullName);
+      localStorage.setItem('teamName', teamName);
+      
+      // Navigate to the connect page
+      navigate('/connect');
+    } else {
+      throw new Error('Player ID not found');
+    }
   } catch (err) {
     console.error("API error:", err);
+    alert(err instanceof Error ? err.message : 'Failed to connect. Please check your team name and full name.');
   }
 };
 

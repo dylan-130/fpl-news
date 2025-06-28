@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Components/Navbar/Navbar';
 import '../styles/Global.css';
@@ -6,58 +7,161 @@ import '../styles/Connect.css';
 import PlayerCard from '../Components/PlayerCard/PlayerCard';
 import Button from '../Components/Button/Button';
 
+interface Player {
+  id: number;
+  name: string;
+  points: number;
+  position: number;
+  element_type: number;
+  is_captain: boolean;
+  is_vice_captain: boolean;
+  multiplier: number;
+  team_name?: string;
+}
+
 const Connect = () => {
   const navigate = useNavigate();
+  const [teamData, setTeamData] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [gameweek, setGameweek] = useState(0);
+
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const playerId = localStorage.getItem('playerId');
+        if (!playerId) {
+          throw new Error('Player ID not found. Please try connecting again.');
+        }
+
+        // Fetch team data from the API
+        const response = await fetch(`http://127.0.0.1:8000/api/async_get_team_data/?playerId=${playerId}`);
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch team data');
+        }
+        
+        const data = await response.json();
+        console.log("Team data received:", data);
+        
+        if (Array.isArray(data)) {
+          setTeamData(data);
+          // Extract gameweek from first player if available
+          setGameweek(data[0]?.event || 0);
+        } else {
+          throw new Error('Invalid team data format');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load team');
+        console.error("Error fetching team data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeamData();
+  }, []);
+
+  // Calculate total points
+  const totalPoints = teamData.reduce((sum, player) => sum + player.points, 0);
+
+  // Organize players by position
+  const startingPlayers = teamData.filter(player => player.position <= 11);
+  const benchPlayers = teamData.filter(player => player.position > 11);
+
+  const positionGroups = {
+    goalkeeper: startingPlayers.filter(p => p.element_type === 1),
+    defenders: startingPlayers.filter(p => p.element_type === 2),
+    midfielders: startingPlayers.filter(p => p.element_type === 3),
+    forwards: startingPlayers.filter(p => p.element_type === 4)
+  };
+
+  if (loading) return <div className="loading">Loading team...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className="page-container">  {/* NEW container for the entire page */}
+    <div className="page-container">
       <Navbar />
       
-      {/* Main scrolling area */}
       <div className="connect-page">
         
-        {/* Team Info (not fixed anymore, so remove position: fixed) */}
+        {/* Team Info */}
         <div className="team-info">
-          <div className="team-name">Team Name</div>
-          <div className="team-manager">Dylan Byrne</div>
-          <div className="game-week">GW 20</div>
-          <div className="points">Points: 54</div>
+          <div className="team-name">{localStorage.getItem('teamName') || 'Team Name'}</div>
+          <div className="team-manager">{localStorage.getItem('playerName') || 'Manager'}</div>
+          <div className="game-week">GW {gameweek}</div>
+          <div className="points">Points: {totalPoints}</div>
         </div>
 
+        {/* Goalkeeper */}
         <section className="goalkeeper">
-          <PlayerCard name="Goalkeeper" points={10} />
-        </section>
-
-        <section className="defenders">
-          {[...Array(5)].map((_, i) => (
-            <PlayerCard key={i} name={`Defenders ${i + 1}`} points={10} isViceCaptain = {i === 4} />
-          ))}
-        </section>
-
-        <section className="midfielders">
-          {[...Array(5)].map((_, i) => (
-            <PlayerCard key={i} name={`Midfielders ${i + 1}`} points={8} isCaptain = {i === 4} />
-          ))}
-        </section>
-
-        <section className="forwards">
-          {[...Array(3)].map((_, i) => (
-            <PlayerCard key={i} name={`Calvert-Lewin ${i + 1}`} points={12} showSubOn = {i === 0} />
-          ))}
-        </section>
-
-        <section className="bench">
-          {[...Array(5)].map((_, i) => (
+          {positionGroups.goalkeeper.map(player => (
             <PlayerCard
-              key={i}
-              name={`Substitution ${i + 1}`}
-              points={3 + i}
-              showSubOff = {i === 4}
+              key={player.id}
+              name={player.name}
+              points={player.points}
+              isCaptain={player.is_captain}
+              isViceCaptain={player.is_vice_captain}
             />
           ))}
         </section>
 
-        {/* Buttons at the bottom of the main content flow, not fixed */}
+        {/* Defenders */}
+        <section className="defenders">
+          {positionGroups.defenders.map(player => (
+            <PlayerCard
+              key={player.id}
+              name={player.name}
+              points={player.points}
+              isCaptain={player.is_captain}
+              isViceCaptain={player.is_vice_captain}
+              showSubOff={player.multiplier === 0}
+            />
+          ))}
+        </section>
+
+        {/* Midfielders */}
+        <section className="midfielders">
+          {positionGroups.midfielders.map(player => (
+            <PlayerCard
+              key={player.id}
+              name={player.name}
+              points={player.points}
+              isCaptain={player.is_captain}
+              isViceCaptain={player.is_vice_captain}
+              showSubOff={player.multiplier === 0}
+            />
+          ))}
+        </section>
+
+        {/* Forwards */}
+        <section className="forwards">
+          {positionGroups.forwards.map(player => (
+            <PlayerCard
+              key={player.id}
+              name={player.name}
+              points={player.points}
+              isCaptain={player.is_captain}
+              isViceCaptain={player.is_vice_captain}
+              showSubOff={player.multiplier === 0}
+            />
+          ))}
+        </section>
+
+        {/* Bench */}
+        <section className="bench">
+          {benchPlayers.slice(0, 4).map(player => (
+            <PlayerCard
+              key={player.id}
+              name={player.name}
+              points={player.points}
+              showSubOn={player.multiplier === 1}
+            />
+          ))}
+        </section>
+
+        {/* Buttons */}
         <div className="bottom-right-buttons">
           <Button 
             label="Confirm & Get Bet-Builder" 
