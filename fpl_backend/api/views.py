@@ -52,14 +52,67 @@ async def async_get_team_data(request):
     logger.info(f"Fetched current event: {current_event}, gameweek: {gameweek}")
 
     # Fetch the team data based on player ID and gameweek
-    team_data = await get_team_data(player_id, gameweek)
+    team_response = await get_team_data(player_id, gameweek)
 
-    if not team_data:
+    if not team_response:
         # Return error if no team data is found
         return JsonResponse({'error': 'Team data not found.'}, status=404)
 
-    # Return the fetched team data as a JSON response
-    return JsonResponse(team_data, safe=False)
+    team_data = team_response['team_data']
+    active_chip = team_response.get('active_chip')
+    automatic_subs = team_response.get('automatic_subs', [])
+
+    # Add gameweek to each player
+    for player in team_data:
+        player['event'] = gameweek
+
+    # Handle captain/vice-captain logic and point doubling
+    captain_playing = False
+    vice_captain_playing = False
+    
+    # First pass: check if captain and vice-captain are playing (have points > 0)
+    for player in team_data:
+        if player.get('is_captain') and player.get('points', 0) > 0:
+            captain_playing = True
+        if player.get('is_vice_captain') and player.get('points', 0) > 0:
+            vice_captain_playing = True
+
+    # Second pass: apply captain logic
+    for player in team_data:
+        # If captain is not playing and vice-captain is playing, make vice-captain the captain
+        if not captain_playing and vice_captain_playing and player.get('is_vice_captain'):
+            player['is_captain'] = True
+            player['is_vice_captain'] = False
+            player['multiplier'] = 2
+            player['points'] = player.get('points', 0) * 2
+            logger.info(f"Vice-captain {player['name']} promoted to captain due to captain not playing")
+        # If player has multiplier 2 (captain), double their points
+        elif player.get('multiplier') == 2:
+            current_points = player.get('points', 0)
+            player['points'] = current_points * 2
+            if not player.get('is_captain'):
+                player['is_captain'] = True
+                player['is_vice_captain'] = False
+            logger.info(f"Captain {player['name']} points doubled from {current_points} to {player['points']}")
+
+    # Calculate total points (excluding bench unless bench boost is active)
+    bench_boost_active = active_chip == 'bboost'
+    total_points = 0
+    
+    for player in team_data:
+        # Only count points from starting 11 unless bench boost is active
+        if player['position'] <= 11 or bench_boost_active:
+            total_points += player.get('points', 0)
+
+    logger.info(f"Total points calculated: {total_points} (bench boost active: {bench_boost_active})")
+
+    return JsonResponse({
+        'team_data': team_data,
+        'total_points': total_points,
+        'active_chip': active_chip,
+        'bench_boost_active': bench_boost_active,
+        'gameweek': gameweek
+    })
 
 # View to generate bet suggestions
 @csrf_exempt
@@ -77,10 +130,35 @@ async def generate_bet_suggestions(request):
             return JsonResponse({'error': 'Could not fetch current event.'}, status=500)
         
         gameweek = current_event['id']
-        team_data = await get_team_data(player_id, gameweek)
+        team_response = await get_team_data(player_id, gameweek)
         
-        if not team_data:
+        if not team_response:
             return JsonResponse({'error': 'Team data not found.'}, status=404)
+
+        team_data = team_response['team_data']
+        active_chip = team_response.get('active_chip')
+
+        # Apply same captain logic as in async_get_team_data
+        captain_playing = False
+        vice_captain_playing = False
+        
+        for player in team_data:
+            if player.get('is_captain') and player.get('points', 0) > 0:
+                captain_playing = True
+            if player.get('is_vice_captain') and player.get('points', 0) > 0:
+                vice_captain_playing = True
+
+        for player in team_data:
+            if not captain_playing and vice_captain_playing and player.get('is_vice_captain'):
+                player['is_captain'] = True
+                player['is_vice_captain'] = False
+                player['multiplier'] = 2
+                player['points'] = player.get('points', 0) * 2
+            elif player.get('multiplier') == 2:
+                player['points'] = player.get('points', 0) * 2
+                if not player.get('is_captain'):
+                    player['is_captain'] = True
+                    player['is_vice_captain'] = False
 
         # Generate bet suggestions using ML
         bet_suggestions = bet_generator.generate_bet_suggestions(
@@ -116,10 +194,35 @@ async def adjust_odds(request):
             return JsonResponse({'error': 'Could not fetch current event.'}, status=500)
         
         gameweek = current_event['id']
-        team_data = await get_team_data(player_id, gameweek)
+        team_response = await get_team_data(player_id, gameweek)
         
-        if not team_data:
+        if not team_response:
             return JsonResponse({'error': 'Team data not found.'}, status=404)
+
+        team_data = team_response['team_data']
+        active_chip = team_response.get('active_chip')
+
+        # Apply same captain logic as in async_get_team_data
+        captain_playing = False
+        vice_captain_playing = False
+        
+        for player in team_data:
+            if player.get('is_captain') and player.get('points', 0) > 0:
+                captain_playing = True
+            if player.get('is_vice_captain') and player.get('points', 0) > 0:
+                vice_captain_playing = True
+
+        for player in team_data:
+            if not captain_playing and vice_captain_playing and player.get('is_vice_captain'):
+                player['is_captain'] = True
+                player['is_vice_captain'] = False
+                player['multiplier'] = 2
+                player['points'] = player.get('points', 0) * 2
+            elif player.get('multiplier') == 2:
+                player['points'] = player.get('points', 0) * 2
+                if not player.get('is_captain'):
+                    player['is_captain'] = True
+                    player['is_vice_captain'] = False
 
         # Generate new bet suggestions with adjusted luck level
         bet_suggestions = bet_generator.generate_bet_suggestions(

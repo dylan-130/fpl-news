@@ -25,6 +25,7 @@ const Connect = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [gameweek, setGameweek] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
 
   useEffect(() => {
     const fetchTeamData = async () => {
@@ -45,10 +46,10 @@ const Connect = () => {
         const data = await response.json();
         console.log("Team data received:", data);
         
-        if (Array.isArray(data)) {
-          setTeamData(data);
-          // Extract gameweek from first player if available
-          setGameweek(data[0]?.event || 0);
+        if (data.team_data && Array.isArray(data.team_data)) {
+          setTeamData(data.team_data);
+          setGameweek(data.gameweek || 0);
+          setTotalPoints(data.total_points || 0);
         } else {
           throw new Error('Invalid team data format');
         }
@@ -63,8 +64,8 @@ const Connect = () => {
     fetchTeamData();
   }, []);
 
-  // Calculate total points
-  const totalPoints = teamData.reduce((sum, player) => sum + player.points, 0);
+  // Total points are now calculated correctly in the backend
+  // (excluding bench players unless bench boost is active)
 
   // Organize players by position
   const startingPlayers = teamData.filter(player => player.position <= 11);

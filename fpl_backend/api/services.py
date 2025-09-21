@@ -89,7 +89,12 @@ async def get_team_data(player_id, gameweek):
                         'multiplier': pick['multiplier'],
                         'team_name': teams.get(player.get('team', 0), {}).get('short_name', '')
                     })
-                return team_data
+                
+                return {
+                    'team_data': team_data,
+                    'active_chip': data.get('active_chip'),
+                    'automatic_subs': data.get('automatic_subs', [])
+                }
     except Exception as e:
         logger.error(f"Error in get_team_data: {e}")
         return None
