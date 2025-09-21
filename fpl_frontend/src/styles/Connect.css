@@ -25,11 +25,11 @@
     display: flex;
     justify-content: center;
     gap: 1.5rem; /* Consistent gap */
-    margin-bottom: 1.5rem; /* Consistent spacing */
+    margin-bottom: 1rem; /* Reduced spacing */
 }
 
 .goalkeeper {
-    margin-top: 2rem;
+    margin-top: 1.5rem; /* Reduced top margin to move players up */
     flex-direction: column;
     align-items: center;
 }
@@ -49,6 +49,7 @@
     justify-content: center; /* Center the substitutes */
     flex-wrap: nowrap; /* Prevent wrapping */
     gap: 1.5rem; /* Same gap as other rows */
+    margin-bottom: 0.5rem; /* Reduced bottom margin to create more space for buttons */
 }
 
 /* Buttons */
@@ -56,7 +57,7 @@
     display: flex;
     justify-content: center;
     gap: 1rem;
-    margin-top: 2rem;
+    margin-top: 3rem; /* Increased top margin to create more space from players */
 }
 
 .confirm-button,
@@ -70,7 +71,7 @@
 /* Mobile Viewport */
 @media (max-width: 480px) {
     .goalkeeper {
-        margin-top: 1rem;
+        margin-top: 1rem; /* Keep mobile spacing consistent */
     }
 
     .player-card {
@@ -100,7 +101,7 @@
     }
 
     .bottom-right-buttons {
-        margin-top: 1rem;
+        margin-top: 2rem; /* Increased spacing for mobile */
         gap: 0.7rem; /* Slightly increase gap */
     }
 
@@ -162,7 +163,7 @@
     }
     .bottom-right-buttons {
         position: absolute; /* Pin to the bottom of the container */
-        bottom: 1.5rem; /* Move slightly up from the bottom */
+        bottom: 2rem; /* Move further up from the bottom for more space */
         left: 50%; /* Center horizontally */
         transform: translateX(-50%); /* Adjust for true centering */
         display: flex;
@@ -246,7 +247,7 @@
     
     .bottom-right-buttons {
         position: absolute; /* Pin to the bottom of the container */
-        bottom: 1.5rem; /* Move slightly up from the bottom */
+        bottom: 2rem; /* Move further up from the bottom for more space */
         left: 50%; /* Center horizontally */
         transform: translateX(-50%); /* Adjust for true centering */
         display: flex;
