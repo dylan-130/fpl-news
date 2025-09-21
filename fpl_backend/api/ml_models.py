@@ -13,12 +13,14 @@ class BetGenerator:
         self.player_profiles = self._load_player_profiles()
         self.user_betting_history = self._load_user_history()
         self.bet_types = {
-            'goal_scorer': {'base_odds': 2.5, 'multiplier': 1.2},
-            'assist': {'base_odds': 3.0, 'multiplier': 1.3},
-            'clean_sheet': {'base_odds': 2.0, 'multiplier': 1.1},
-            'bonus_points': {'base_odds': 4.0, 'multiplier': 1.4},
-            'multiple_goals': {'base_odds': 6.0, 'multiplier': 1.5},
-            'man_of_match': {'base_odds': 8.0, 'multiplier': 1.6}
+            'goal_scorer': {'base_odds': 2.0, 'multiplier': 1.2},  # Evens
+            'assist': {'base_odds': 2.5, 'multiplier': 1.3},       # 3/2 shot
+            'clean_sheet': {'base_odds': 1.8, 'multiplier': 1.1},  # 4/5 shot
+            'shots_on_target': {'base_odds': 1.5, 'multiplier': 1.1}, # 1/2 shot
+            'multiple_goals': {'base_odds': 4.0, 'multiplier': 1.4}, # 3/1 shot
+            'man_of_match': {'base_odds': 3.5, 'multiplier': 1.3},  # 5/2 shot
+            'yellow_card': {'base_odds': 2.2, 'multiplier': 1.2},   # 6/5 shot
+            'over_goals': {'base_odds': 1.6, 'multiplier': 1.1}     # 3/5 shot
         }
         
     def _load_player_profiles(self) -> Dict[str, Dict]:
@@ -171,7 +173,7 @@ class BetGenerator:
                 bet_legs.append(high_profile_leg)
                 total_odds *= high_profile_leg['odds']
         
-        # Defensive bet (clean sheet)
+        # Defensive bet (yellow card)
         if selected_players.get('defensive'):
             defensive_leg = self._create_defensive_bet([selected_players['defensive']], luck_level, baseline_odds)
             bet_legs.append(defensive_leg)
@@ -284,30 +286,51 @@ class BetGenerator:
     def _calculate_baseline_odds(self, user_history: List[Dict]) -> float:
         """Calculate baseline odds based on user's betting history"""
         if not user_history:
-            return 2.0  # Default even money shot
+            return 1.2  # Very low odds for new users - 1/5 shot
         
-        # Calculate average odds from recent bets
+        # Calculate average luck level from recent bets to understand user preference
         recent_bets = user_history[-10:]  # Last 10 bets
         if recent_bets:
-            avg_odds = float(np.mean([bet.get('total_odds', 2.0) for bet in recent_bets]))
-            return max(1.5, min(10.0, avg_odds))  # Clamp between 1.5 and 10.0
+            avg_luck_level = float(np.mean([bet.get('luck_level', 0) for bet in recent_bets]))
+            
+            # Adjust baseline based on user's luck preference
+            if avg_luck_level > 0:
+                # User prefers higher odds - start with higher baseline
+                baseline = 1.2 + (avg_luck_level * 0.3)
+            elif avg_luck_level < 0:
+                # User prefers lower odds - start with lower baseline
+                baseline = 1.2 + (avg_luck_level * 0.2)
+            else:
+                # User stays neutral - moderate baseline
+                baseline = 1.5
+            
+            return max(1.1, min(6.0, baseline))
         
-        return 2.0
+        return 1.2
 
     def _create_captain_bet(self, player: Dict, luck_level: int, baseline_odds: float) -> Dict:
         """Create a bet for the captain"""
         profile = self._determine_player_profile(player['name'].lower(), player.get('element_type', 1))
-        profile_data = self.player_profiles.get(profile, self.player_profiles['mid_profile'])
+        position = player.get('element_type', 1)
         
-        # Captain gets highest confidence
-        base_odds = self.bet_types['goal_scorer']['base_odds'] * 0.8  # Better odds for captain
+        # Choose appropriate bet type based on position
+        if position == 1:  # Goalkeeper
+            bet_type = 'Clean Sheet'
+            base_odds = 1.5  # 1/2 shot
+        elif position == 2:  # Defender
+            bet_type = 'Yellow Card'
+            base_odds = 2.0  # Evens
+        else:  # Midfielder or Forward
+            bet_type = 'Goal Scorer (Captain)'
+            base_odds = 1.8  # 4/5 shot
+        
         adjusted_odds = self._adjust_odds_for_luck(base_odds, luck_level, baseline_odds)
         
         return {
             'id': f"captain_{player['id']}",
             'player': player['name'],
             'team': player.get('team_name', 'Unknown'),
-            'betType': 'Goal Scorer (Captain)',
+            'betType': bet_type,
             'odds': adjusted_odds,
             'confidence': 'High'
         }
@@ -315,16 +338,26 @@ class BetGenerator:
     def _create_vice_captain_bet(self, player: Dict, luck_level: int, baseline_odds: float) -> Dict:
         """Create a bet for the vice captain"""
         profile = self._determine_player_profile(player['name'].lower(), player.get('element_type', 1))
-        profile_data = self.player_profiles.get(profile, self.player_profiles['mid_profile'])
+        position = player.get('element_type', 1)
         
-        base_odds = self.bet_types['assist']['base_odds'] * 0.9  # Slightly better odds
+        # Choose appropriate bet type based on position
+        if position == 1:  # Goalkeeper
+            bet_type = 'Clean Sheet'
+            base_odds = 1.6  # 3/5 shot
+        elif position == 2:  # Defender
+            bet_type = 'Yellow Card'
+            base_odds = 2.2  # 6/5 shot
+        else:  # Midfielder or Forward
+            bet_type = 'Assist (Vice Captain)'
+            base_odds = 2.0  # Evens
+        
         adjusted_odds = self._adjust_odds_for_luck(base_odds, luck_level, baseline_odds)
         
         return {
             'id': f"vc_{player['id']}",
             'player': player['name'],
             'team': player.get('team_name', 'Unknown'),
-            'betType': 'Assist (Vice Captain)',
+            'betType': bet_type,
             'odds': adjusted_odds,
             'confidence': 'Medium-High'
         }
@@ -332,34 +365,43 @@ class BetGenerator:
     def _create_high_profile_bet(self, player: Dict, luck_level: int, baseline_odds: float) -> Dict:
         """Create a bet for high profile players"""
         profile = self._determine_player_profile(player['name'].lower(), player.get('element_type', 1))
-        profile_data = self.player_profiles.get(profile, self.player_profiles['mid_profile'])
+        position = player.get('element_type', 1)
         
-        # High profile players get better odds
-        base_odds = self.bet_types['goal_scorer']['base_odds'] * 0.85
+        # Choose appropriate bet type based on position
+        if position == 1:  # Goalkeeper
+            bet_type = 'Clean Sheet'
+            base_odds = 1.7  # 7/10 shot
+        elif position == 2:  # Defender
+            bet_type = 'Yellow Card'
+            base_odds = 2.5  # 3/2 shot
+        else:  # Midfielder or Forward
+            bet_type = 'Goal Scorer'
+            base_odds = 2.2  # 6/5 shot
+        
         adjusted_odds = self._adjust_odds_for_luck(base_odds, luck_level, baseline_odds)
         
         return {
             'id': f"high_{player['id']}",
             'player': player['name'],
             'team': player.get('team_name', 'Unknown'),
-            'betType': 'Goal Scorer',
+            'betType': bet_type,
             'odds': adjusted_odds,
             'confidence': 'Medium'
         }
 
     def _create_defensive_bet(self, defenders: List[Dict], luck_level: int, baseline_odds: float) -> Dict:
-        """Create a defensive bet (clean sheet)"""
+        """Create a defensive bet (yellow card)"""
         # Use the highest profile defender
         best_defender = max(defenders, key=lambda x: self._determine_player_profile(x['name'].lower(), x.get('element_type', 1)) == 'high_profile')
         
-        base_odds = self.bet_types['clean_sheet']['base_odds']
+        base_odds = self.bet_types['yellow_card']['base_odds']
         adjusted_odds = self._adjust_odds_for_luck(base_odds, luck_level, baseline_odds)
         
         return {
             'id': f"def_{best_defender['id']}",
             'player': best_defender['name'],
             'team': best_defender.get('team_name', 'Unknown'),
-            'betType': 'Clean Sheet',
+            'betType': 'Yellow Card',
             'odds': adjusted_odds,
             'confidence': 'Medium'
         }
@@ -384,11 +426,29 @@ class BetGenerator:
     def _create_extra_bet(self, player: Dict, luck_level: int, baseline_odds: float) -> Dict:
         """Create an extra bet for remaining players"""
         profile = self._determine_player_profile(player['name'].lower(), player.get('element_type', 1))
+        position = player.get('element_type', 1)
         
-        if profile == 'high_profile':
-            base_odds = self.bet_types['bonus_points']['base_odds']
-        else:
-            base_odds = self.bet_types['goal_scorer']['base_odds'] * 1.2  # Higher odds for lower profile
+        # Choose bet type based on position and profile
+        if position == 1:  # Goalkeeper
+            bet_type = 'Clean Sheet'
+            base_odds = 1.8  # 4/5 shot
+        elif position == 2:  # Defender
+            bet_type = 'Yellow Card'
+            base_odds = 2.8  # 9/5 shot
+        elif position == 3:  # Midfielder
+            if profile == 'high_profile':
+                bet_type = 'Assist'
+                base_odds = 2.5  # 3/2 shot
+            else:
+                bet_type = 'Shots on Target'
+                base_odds = 1.6  # 3/5 shot
+        else:  # Forward
+            if profile == 'high_profile':
+                bet_type = 'Goal Scorer'
+                base_odds = 2.5  # 3/2 shot
+            else:
+                bet_type = 'Shots on Target'
+                base_odds = 1.8  # 4/5 shot
         
         adjusted_odds = self._adjust_odds_for_luck(base_odds, luck_level, baseline_odds)
         
@@ -396,23 +456,35 @@ class BetGenerator:
             'id': f"extra_{player['id']}",
             'player': player['name'],
             'team': player.get('team_name', 'Unknown'),
-            'betType': 'Bonus Points' if profile == 'high_profile' else 'Goal Scorer',
+            'betType': bet_type,
             'odds': adjusted_odds,
             'confidence': 'Low-Medium'
         }
 
     def _adjust_odds_for_luck(self, base_odds: float, luck_level: int, baseline_odds: float) -> float:
         """Adjust odds based on luck level and user history"""
-        # Luck level affects odds: positive = longer odds, negative = shorter odds
-        luck_multiplier = 1 + (luck_level * 0.2)
+        # Simplified odds adjustment - more predictable and realistic
+        if luck_level > 0:
+            # Feeling lucky - increase odds by 20% per level
+            adjusted_odds = base_odds * (1 + (luck_level * 0.2))
+        elif luck_level < 0:
+            # Not feeling lucky - decrease odds by 15% per level
+            adjusted_odds = base_odds * (1 + (luck_level * 0.15))
+        else:
+            # Neutral - use base odds
+            adjusted_odds = base_odds
         
-        # User history baseline adjustment
-        history_multiplier = baseline_odds / 2.0  # Normalize to baseline
+        # Apply user history baseline adjustment
+        # If user prefers higher odds, increase baseline
+        # If user prefers lower odds, decrease baseline
+        user_history_multiplier = baseline_odds / 1.2  # Normalize to default baseline
+        adjusted_odds = adjusted_odds * user_history_multiplier
         
-        adjusted_odds = base_odds * luck_multiplier * history_multiplier
+        # Clamp to reasonable range
+        min_odds = 1.1
+        max_odds = 8.0 if luck_level > 0 else 5.0
         
-        # Clamp odds to reasonable range
-        return max(1.1, min(20.0, adjusted_odds))
+        return max(min_odds, min(max_odds, adjusted_odds))
 
     def get_user_history(self, player_id: str) -> List[Dict]:
         """Get betting history for a specific user (for debugging)"""

@@ -36,6 +36,7 @@ const BetBuilder = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [teamData, setTeamData] = useState<any[]>([]);
+  const [isReturningUser, setIsReturningUser] = useState(false);
 
   useEffect(() => {
     const fetchBetBuilder = async () => {
@@ -45,8 +46,15 @@ const BetBuilder = () => {
           throw new Error('Player ID not found. Please try connecting again.');
         }
 
+        // First check if user has betting history
+        const historyResponse = await fetch(`http://127.0.0.1:8000/api/user_history/?playerId=${playerId}`);
+        if (historyResponse.ok) {
+          const historyData = await historyResponse.json();
+          setIsReturningUser(historyData.bet_count > 0);
+        }
+
         // Fetch team data and generate bet suggestions
-        const response = await fetch(`http://127.0.0.1:8000/api/generate_bet_suggestions/?playerId=${playerId}`);
+        const response = await fetch(`http://127.0.0.1:8000/api/generate_bet_suggestions/?playerId=${playerId}&luckLevel=0`);
         
         if (!response.ok) {
           const errorData = await response.json();
@@ -61,6 +69,7 @@ const BetBuilder = () => {
           ...prev,
           legs: data.bet_legs || [],
           totalOdds: data.total_odds || 1,
+          luckLevel: data.luck_level || 0,
           potentialWin: (data.total_odds || 1) * prev.totalStake
         }));
       } catch (err) {
@@ -159,7 +168,7 @@ const BetBuilder = () => {
             <div className="luck-info">
               <span className="luck-label">Luck Level: {betSlip.luckLevel}</span>
               <span className="luck-description">
-                {betSlip.luckLevel === 0 && "Baseline - Safe bets"}
+                {betSlip.luckLevel === 0 && (isReturningUser ? "Standard odds - Use buttons to adjust" : "New user - Start with low odds")}
                 {betSlip.luckLevel > 0 && `Feeling lucky! +${betSlip.luckLevel} level(s)`}
                 {betSlip.luckLevel < 0 && `Playing it safe - ${Math.abs(betSlip.luckLevel)} level(s)`}
               </span>
@@ -171,7 +180,7 @@ const BetBuilder = () => {
                 onClick={() => adjustLuckLevel('lucky')}
                 className="lucky-button"
               />
-              {betSlip.luckLevel > 0 && (
+              {isReturningUser && (
                 <Button 
                   label="😰 Not That Lucky" 
                   onClick={() => adjustLuckLevel('unlucky')}

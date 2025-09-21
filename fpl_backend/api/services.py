@@ -1,21 +1,31 @@
 # api/services.py
 import aiohttp
 import logging
+from .typesense_service import typesense_service
 
-AWS_API_URL = "https://o03qkazcel.execute-api.eu-west-1.amazonaws.com/$default/FPLHandler"
 logger = logging.getLogger(__name__)
 
 async def get_player_id_from_api(player_name, team_name):
-    url = f"{AWS_API_URL}?teamName={team_name}&playerName={player_name}"
+    """
+    Get player ID from Typesense Cloud instead of AWS API
+    """
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                data = await response.json()
-                if 'Player ID' in data:
-                    return data['Player ID']
-                return None
+        logger.info(f"Starting search for player: '{player_name}' in team: '{team_name}'")
+        
+        # Search for the player in Typesense
+        player_id = typesense_service.search_player(player_name, team_name)
+        
+        if player_id:
+            logger.info(f"Found player ID {player_id} for {player_name} in {team_name}")
+            return player_id
+        else:
+            logger.warning(f"No player found for {player_name} in {team_name}")
+            return None
+            
     except Exception as e:
-        logger.error(f"Error fetching player ID: {e}")
+        logger.error(f"Error fetching player ID from Typesense: {e}")
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         return None
 
 async def get_current_event():
@@ -83,7 +93,13 @@ async def get_team_data(player_id, gameweek):
                         'multiplier': pick['multiplier'],
                         'team_name': teams.get(player.get('team', 0), {}).get('short_name', '')
                     })
-                return team_data
+                
+                # Return team data along with chip information
+                return {
+                    'team_data': team_data,
+                    'active_chip': data.get('active_chip'),
+                    'automatic_subs': data.get('automatic_subs', [])
+                }
     except Exception as e:
         logger.error(f"Error in get_team_data: {e}")
         return None

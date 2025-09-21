@@ -124,12 +124,12 @@ const BetReceipt = () => {
 
           <div className="receipt-actions">
             <Button 
-              label="🏠 Go Home" 
+              label="Go Home" 
               onClick={() => navigate('/')}
               className="home-button"
             />
             <Button 
-              label="🎯 Place Another Bet" 
+              label="Place Another Bet" 
               onClick={() => navigate('/bet-builder')}
               className="another-bet-button"
             />

@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -129,3 +134,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Typesense Configuration
+TYPESENSE_CONFIG = {
+    'nodes': [{
+        'host': os.getenv('TYPESENSE_NODE_URL', 'https://dg7xevimtkla3zwop-1.a1.typesense.net').replace('https://', ''),
+        'port': os.getenv('TYPESENSE_PORT', '443'),
+        'protocol': 'https'
+    }],
+    'api_key': os.getenv('TYPESENSE_ADMIN_API_KEY', 'lBA2upZ1w6kPfu9qj0fe1Jnkj1UPK1ts'),
+    'connection_timeout_seconds': 2
+}

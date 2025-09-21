@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .services import get_player_id_from_api, get_current_event, get_team_data
 from .ml_models import bet_generator
+from .typesense_service import typesense_service
 
 # Logger to monitor the process
 logger = logging.getLogger(__name__)
@@ -203,3 +204,72 @@ async def debug_user_history(request):
     except Exception as e:
         logger.error(f"Error getting user history: {e}")
         return JsonResponse({'error': 'Failed to get user history.'}, status=500)
+
+# Endpoint to check if user has betting history
+@csrf_exempt
+async def user_history(request):
+    player_id = request.GET.get('playerId')
+    
+    if not player_id:
+        return JsonResponse({'error': 'Player ID missing.'}, status=400)
+    
+    try:
+        # Get user history
+        user_history = bet_generator.get_user_history(player_id)
+        
+        return JsonResponse({
+            'player_id': player_id,
+            'bet_count': len(user_history),
+            'is_returning_user': len(user_history) > 0
+        })
+        
+    except Exception as e:
+        logger.error(f"Error checking user history: {e}")
+        return JsonResponse({'error': 'Failed to check user history.'}, status=500)
+
+# Debug endpoint to check ML calculations
+@csrf_exempt
+async def debug_ml_calculations(request):
+    player_id = request.GET.get('playerId')
+    luck_level = int(request.GET.get('luckLevel', 0))
+    
+    if not player_id:
+        return JsonResponse({'error': 'Player ID missing.'}, status=400)
+    
+    try:
+        # Get user history
+        user_history = bet_generator.get_user_history(player_id)
+        
+        # Calculate baseline odds
+        baseline_odds = bet_generator._calculate_baseline_odds(user_history)
+        
+        # Get sample bet calculation
+        sample_bet = {
+            'base_odds': 2.0,  # Goal scorer base
+            'luck_level': luck_level,
+            'baseline_odds': baseline_odds
+        }
+        
+        # Calculate adjusted odds
+        adjusted_odds = bet_generator._adjust_odds_for_luck(
+            sample_bet['base_odds'], 
+            sample_bet['luck_level'], 
+            sample_bet['baseline_odds']
+        )
+        
+        return JsonResponse({
+            'player_id': player_id,
+            'user_history_count': len(user_history),
+            'recent_luck_levels': [bet.get('luck_level', 0) for bet in user_history[-5:]],
+            'baseline_odds': baseline_odds,
+            'sample_calculation': {
+                'base_odds': sample_bet['base_odds'],
+                'luck_level': sample_bet['luck_level'],
+                'baseline_odds': sample_bet['baseline_odds'],
+                'adjusted_odds': adjusted_odds
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in ML debug: {e}")
+        return JsonResponse({'error': 'Failed to debug ML calculations.'}, status=500)

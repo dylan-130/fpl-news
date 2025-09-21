@@ -8,6 +8,93 @@
       "potential_win": 0,
       "legs_count": 6,
       "bet_id": "c7e4c0f2-2c31-473d-93a6-ef5adf800f9c"
+    },
+    {
+      "timestamp": "2025-07-04T21:33:30.872441",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 5,
+      "bet_id": "746c99e2-0305-4898-8d91-47970a54a4ad"
+    }
+  ],
+  "4700653": [
+    {
+      "timestamp": "2025-07-04T17:40:50.243199",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "40e68af4-3014-445b-823a-0097f7dd56b5"
+    }
+  ],
+  "7110642": [
+    {
+      "timestamp": "2025-07-04T18:05:58.610719",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "05c3eb14-7a40-4520-ba71-d9c6d7c3ecf9"
+    },
+    {
+      "timestamp": "2025-07-04T18:07:11.201435",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "102fb0eb-cb6d-42ab-bfce-d436c406bc9e"
+    },
+    {
+      "timestamp": "2025-07-04T18:07:33.034507",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "9493f57f-a063-4378-8799-58351e36597b"
+    },
+    {
+      "timestamp": "2025-07-04T18:08:00.259940",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "7da54446-50c5-4973-9015-be7dd8d5d5e3"
+    },
+    {
+      "timestamp": "2025-07-04T18:08:27.074040",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "dd65c674-aafb-4aca-9b06-7409b0972120"
+    },
+    {
+      "timestamp": "2025-07-04T18:08:42.905577",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 6,
+      "bet_id": "2bd8373a-c7c1-47a2-b473-905b88c0455a"
+    }
+  ],
+  "3733787": [
+    {
+      "timestamp": "2025-09-21T13:23:08.682221",
+      "total_odds": 1.0,
+      "luck_level": 0,
+      "stake": 0,
+      "potential_win": 0,
+      "legs_count": 5,
+      "bet_id": "3357e87f-a8f9-405e-ac4c-07ce64d5cf90"
     }
   ]
 }
