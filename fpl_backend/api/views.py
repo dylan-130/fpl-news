@@ -273,3 +273,22 @@ async def debug_ml_calculations(request):
     except Exception as e:
         logger.error(f"Error in ML debug: {e}")
         return JsonResponse({'error': 'Failed to debug ML calculations.'}, status=500)
+
+@csrf_exempt
+async def get_autocomplete_suggestions(request):
+    query = request.GET.get('q', '').strip()
+    field = request.GET.get('field', 'both')
+    
+    if not query or len(query) < 2:
+        return JsonResponse({'suggestions': []})
+    
+    try:
+        suggestions = typesense_service.get_autocomplete_suggestions(query, field)
+        return JsonResponse({
+            'suggestions': suggestions,
+            'query': query,
+            'field': field
+        })
+    except Exception as e:
+        logger.error(f"Error getting autocomplete suggestions: {e}")
+        return JsonResponse({'error': 'Failed to get suggestions.'}, status=500)

@@ -12,4 +12,5 @@ urlpatterns = [
     path('debug_user_history/', views.debug_user_history, name='debug_user_history'),
     path('user_history/', views.user_history, name='user_history'),
     path('debug_ml_calculations/', views.debug_ml_calculations, name='debug_ml_calculations'),
+    path('autocomplete/', views.get_autocomplete_suggestions, name='get_autocomplete_suggestions'),
 ]

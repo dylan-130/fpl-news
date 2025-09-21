@@ -10,8 +10,6 @@ async def get_player_id_from_api(player_name, team_name):
     Get player ID from Typesense Cloud instead of AWS API
     """
     try:
-        logger.info(f"Starting search for player: '{player_name}' in team: '{team_name}'")
-        
         # Search for the player in Typesense
         player_id = typesense_service.search_player(player_name, team_name)
         
@@ -24,8 +22,6 @@ async def get_player_id_from_api(player_name, team_name):
             
     except Exception as e:
         logger.error(f"Error fetching player ID from Typesense: {e}")
-        import traceback
-        logger.error(f"Full traceback: {traceback.format_exc()}")
         return None
 
 async def get_current_event():
@@ -93,13 +89,7 @@ async def get_team_data(player_id, gameweek):
                         'multiplier': pick['multiplier'],
                         'team_name': teams.get(player.get('team', 0), {}).get('short_name', '')
                     })
-                
-                # Return team data along with chip information
-                return {
-                    'team_data': team_data,
-                    'active_chip': data.get('active_chip'),
-                    'automatic_subs': data.get('automatic_subs', [])
-                }
+                return team_data
     except Exception as e:
         logger.error(f"Error in get_team_data: {e}")
         return None
