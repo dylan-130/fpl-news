@@ -82,29 +82,57 @@ class TypesenseService:
     def get_autocomplete_suggestions(self, query, field='both'):
         try:
             self.create_collection_if_not_exists()
-            if field == 'team':
-                search_parameters = {'q': query, 'query_by': 'squad_name', 'per_page': 20}
-            elif field == 'name':
-                search_parameters = {'q': query, 'query_by': 'manager_name', 'per_page': 20}
-            else:
-                search_parameters = {'q': query, 'query_by': 'manager_name,squad_name', 'per_page': 20}
-
+            
+            # Search both fields to get complete player records
+            search_parameters = {'q': query, 'query_by': 'manager_name,squad_name', 'per_page': 20}
             search_result = self.client.collections[self.collection_name].documents.search(search_parameters)
+            
             suggestions = []
-            seen_teams = set()
-            seen_names = set()
+            seen_combinations = set()
 
             for hit in search_result['hits']:
                 player_data = hit['document']
-                manager_name = player_data.get('manager_name', '')
-                squad_name = player_data.get('squad_name', '')
-
-                if field in ['team', 'both'] and squad_name and squad_name not in seen_teams:
-                    suggestions.append({'type': 'team', 'value': squad_name, 'display': squad_name})
-                    seen_teams.add(squad_name)
-                if field in ['name', 'both'] and manager_name and manager_name not in seen_names:
-                    suggestions.append({'type': 'name', 'value': manager_name, 'display': manager_name})
-                    seen_names.add(manager_name)
+                manager_name = player_data.get('manager_name', '').strip()
+                squad_name = player_data.get('squad_name', '').strip()
+                
+                if not manager_name or not squad_name:
+                    continue
+                
+                # Create a unique key for this combination
+                combination_key = f"{manager_name.lower()}|{squad_name.lower()}"
+                if combination_key in seen_combinations:
+                    continue
+                seen_combinations.add(combination_key)
+                
+                # Filter based on field and query relevance
+                if field == 'team':
+                    # For team field, only show if squad_name contains the query
+                    if query.lower() in squad_name.lower():
+                        suggestions.append({
+                            'type': 'team',
+                            'team_name': squad_name,
+                            'full_name': manager_name,
+                            'display': f"{squad_name} - {manager_name}"
+                        })
+                elif field == 'name':
+                    # For name field, only show if manager_name contains the query
+                    if query.lower() in manager_name.lower():
+                        suggestions.append({
+                            'type': 'name',
+                            'team_name': squad_name,
+                            'full_name': manager_name,
+                            'display': f"{manager_name} - {squad_name}"
+                        })
+                else:
+                    # For 'both', show if either field contains the query
+                    if query.lower() in manager_name.lower() or query.lower() in squad_name.lower():
+                        suggestions.append({
+                            'type': 'both',
+                            'team_name': squad_name,
+                            'full_name': manager_name,
+                            'display': f"{manager_name} ({squad_name})"
+                        })
+            
             return suggestions[:10]
         except Exception as e:
             logger.error(f"Error getting autocomplete suggestions: {e}")
