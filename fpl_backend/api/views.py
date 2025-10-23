@@ -6,9 +6,10 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from .services import get_player_id_from_api, get_current_event, get_team_data
+from .services import get_player_id_from_api, get_current_event, get_team_data, get_player_leagues, get_league_standings, get_player_transfers, get_player_captain_chips
 from .ml_models import bet_generator
 from .typesense_service import typesense_service
+from .news_generator import NewsGenerator
 
 # Logger to monitor the process
 logger = logging.getLogger(__name__)
@@ -395,3 +396,79 @@ async def get_autocomplete_suggestions(request):
     except Exception as e:
         logger.error(f"Error getting autocomplete suggestions: {e}")
         return JsonResponse({'error': 'Failed to get suggestions.'}, status=500)
+
+@csrf_exempt
+async def get_player_leagues_view(request):
+    """Get all leagues for a player"""
+    player_id = request.GET.get('playerId')
+    
+    if not player_id:
+        return JsonResponse({'error': 'Player ID missing.'}, status=400)
+    
+    try:
+        leagues = await get_player_leagues(player_id)
+        if not leagues:
+            return JsonResponse({'error': 'No leagues found.'}, status=404)
+        
+        return JsonResponse({'leagues': leagues})
+    except Exception as e:
+        logger.error(f"Error fetching player leagues: {e}")
+        return JsonResponse({'error': 'Failed to fetch leagues.'}, status=500)
+
+@csrf_exempt
+async def generate_league_news(request):
+    """Generate news articles for all player's leagues"""
+    player_id = request.GET.get('playerId')
+    team_name = request.GET.get('teamName', 'Your Team')
+    manager_name = request.GET.get('managerName', 'Manager')
+    
+    if not player_id:
+        return JsonResponse({'error': 'Player ID missing.'}, status=400)
+    
+    try:
+        # Get player's leagues
+        leagues = await get_player_leagues(player_id)
+        if not leagues:
+            return JsonResponse({'error': 'No leagues found.'}, status=404)
+        
+        # Get current gameweek and team data
+        current_event = await get_current_event()
+        if not current_event:
+            return JsonResponse({'error': 'Could not fetch current event.'}, status=500)
+        
+        gameweek = current_event['id']
+        team_response = await get_team_data(player_id, gameweek)
+        
+        if not team_response:
+            return JsonResponse({'error': 'Team data not found.'}, status=404)
+        
+        # Generate articles for each league
+        news_generator = NewsGenerator()
+        articles = []
+        
+        for league in leagues:
+            league_standings = await get_league_standings(league['id'], gameweek)
+            transfers_data = await get_player_transfers(player_id, gameweek)
+            chips_data = await get_player_captain_chips(player_id, gameweek)
+            
+            if league_standings:
+                article = news_generator.generate_article(
+                    league, 
+                    {
+                        'team_name': team_name,
+                        'manager_name': manager_name,
+                        'team_data': team_response['team_data'],
+                        'active_chip': team_response.get('active_chip')
+                    },
+                    {'gameweek': gameweek},
+                    league_standings,
+                    int(player_id),
+                    transfers_data,
+                    chips_data
+                )
+                articles.append(article)
+        
+        return JsonResponse({'articles': articles})
+    except Exception as e:
+        logger.error(f"Error generating league news: {e}")
+        return JsonResponse({'error': 'Failed to generate news.'}, status=500)

@@ -60,6 +60,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Frontend origin
+    "http://localhost:5174",  # Frontend origin (alternative port)
 ]
 
 ROOT_URLCONF = 'fpl_backend.urls'

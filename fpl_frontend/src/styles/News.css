@@ -1,0 +1,198 @@
+/* News.css */
+
+/* Override page-container for News page to allow scrolling */
+.news-page-container {
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 100vh;
+}
+
+.news-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.news-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.news-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.news-header p {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin: 0;
+}
+
+.articles-container {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.news-article {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.news-article:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.article-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.article-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #ccc;
+  flex-wrap: wrap;
+}
+
+.league-name {
+  font-weight: bold;
+  color: #4ecdc4;
+  background: rgba(78, 205, 196, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 5px;
+}
+
+.gameweek {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 5px;
+}
+
+.position-change {
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 5px;
+}
+
+.position-change.positive {
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.position-change-meta {
+  margin-left: 0.5rem;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.position-change-meta.positive {
+  color: #4CAF50;
+}
+
+.position-change-meta.negative {
+  color: #f44336;
+}
+
+.position-change-meta.neutral {
+  color: #ff9800;
+}
+
+.article-body p {
+  line-height: 1.6;
+  color: #e0e0e0;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.article-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.read-article-button {
+  background: linear-gradient(45deg, #4ecdc4, #44a08d);
+  border: none;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+.read-article-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+  background: linear-gradient(45deg, #44a08d, #4ecdc4);
+}
+
+.no-articles {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-articles p {
+  color: #ccc;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.news-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .news-page {
+    padding: 1rem;
+  }
+  
+  .news-header h1 {
+    font-size: 2rem;
+  }
+  
+  .news-article {
+    padding: 1.5rem;
+  }
+  
+  .article-header h2 {
+    font-size: 1.3rem;
+  }
+  
+  .article-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .news-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+}

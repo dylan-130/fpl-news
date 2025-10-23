@@ -165,8 +165,8 @@ const Connect = () => {
         {/* Buttons */}
         <div className="bottom-right-buttons">
           <Button 
-            label="Confirm & Get Bet-Builder" 
-            onClick={() => navigate('/bet-builder')} 
+            label="That's My Team!" 
+            onClick={() => navigate('/news')} 
             className="confirm-button" 
           />
           <Button 
