@@ -1,12 +1,13 @@
-# FPL Pulse - AI-Powered Fantasy Premier League Betting Platform
+# FPL News - AI-Powered Fantasy Premier League News and Betting Platform
 
-A sophisticated web application that combines Fantasy Premier League (FPL) team analysis with AI-powered betting suggestions. Built with Django backend and React frontend, featuring machine learning for personalized bet generation.
+A sophisticated web application that combines Fantasy Premier League (FPL) team analysis with AI-powered article generation and betting suggestions. Built with Django backend and React frontend, featuring machine learning for personalized bet generation.
 
 ## 🚀 Features
 
 ### Core Functionality
 - **FPL Team Integration**: Connect your FPL team and view your current squad
 - **AI-Powered Bet Builder**: Sophisticated ML system that generates personalized betting suggestions
+- **AI-Powered League News Articles**: News articles generated automatically for all your leagues so you can stay two steps ahead of the curve!
 - **User-Specific Learning**: Tracks betting history to improve suggestions over time
 - **Dynamic Odds Adjustment**: "I'm Feeling Lucky" system for risk adjustment
 - **Professional Bet Slip**: Complete betting interface with stake management
